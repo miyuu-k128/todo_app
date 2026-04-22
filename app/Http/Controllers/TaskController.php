@@ -9,17 +9,18 @@ class TaskController extends Controller
 {
     public function index()
     {
-        $tasks = Task::latest()->get();
+        $tasks = Task::where('user_id', auth()->id())->get();
         return view('tasks.index', compact('tasks'));
     }
 
     public function store(Request $request)
     {
         Task::create([
-            'title' => $request->title
+            'title' => $request->title,
+            'user_id' => auth()->id(),
         ]);
 
-        return redirect('/');
+        return redirect()->route('tasks.index');
     }
 
     public function done($id)
@@ -28,12 +29,12 @@ class TaskController extends Controller
         $task->is_done = true;
         $task->save();
 
-        return redirect('/');
+        return redirect()->route('tasks.index');
     }
 
     public function destroy($id)
     {
         Task::findOrFail($id)->delete();
-        return redirect('/');
+        return redirect()->route('tasks.index');
     }
 }
